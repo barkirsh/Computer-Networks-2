@@ -1,0 +1,35 @@
+import socket
+
+# def main:
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind(('', 12345))
+server.listen(5)
+
+while True:
+    client_socket, client_address = server.accept()
+    print('Connection from: ', client_address)
+
+    keep_alive = True
+    while keep_alive:
+        data = client_socket.recv(1024)
+        # GET[file]HTTP / 1.1
+        # n\r\n\r\
+        request = data.decode('utf-8')
+        lines = request.split('\r\n')
+
+        for line in lines:
+            print(line)
+            if line.startswith("Connection:"):
+                if line.endswith("keep-alive"):
+                    keep_alive = True
+                else:
+                    keep_alive = False
+        # if request.startswith('GET') & request.endswith('\r\n\r\n'):
+        #   break
+
+        client_socket.send("OK")
+    # if connection is closed:
+    #    break
+
+    client_socket.close()
+print('Client disconnected')
